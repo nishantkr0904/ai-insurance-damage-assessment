@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Filter, ArrowRight, Car } from 'lucide-react';
+import { Search, Filter, ArrowRight, Car, FileText } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { StatusBadge } from '../components/ui/StatusBadge';
+import { EmptyState } from '../components/ui/EmptyState';
 import { mockClaims } from '../utils/mockData';
 import type { ClaimStatus } from '../types';
 
@@ -91,9 +92,19 @@ export default function ClaimsListPage() {
         ))}
 
         {filtered.length === 0 && (
-          <Card className="text-center py-16">
-            <p className="text-slate-400">No claims match your search.</p>
-          </Card>
+          <EmptyState
+            icon={search || filter !== 'all' ? Search : FileText}
+            title={search || filter !== 'all' ? 'No matching claims' : 'No claims yet'}
+            description={search || filter !== 'all'
+              ? 'Try adjusting your search or filter to find what you\'re looking for.'
+              : 'Submit your first claim to get started with AI-powered damage assessment.'
+            }
+            action={search || filter !== 'all' ? undefined : { label: 'Submit First Claim', to: '/claims/new' }}
+            secondaryAction={search || filter !== 'all'
+              ? { label: 'Clear filters', onClick: () => { setSearch(''); setFilter('all'); } }
+              : undefined
+            }
+          />
         )}
       </div>
     </div>
