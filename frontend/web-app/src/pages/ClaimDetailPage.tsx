@@ -1,12 +1,13 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Car, Brain, TrendingUp, Shield, FileText,
   Download, CheckCircle, AlertTriangle, XCircle, Wrench,
+  Loader2, Check, ExternalLink,
 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { StatusBadge } from '../components/ui/StatusBadge';
-import { Button } from '../components/ui/Button';
 import { DamageImageViewer } from '../components/DamageImageViewer';
 import { mockClaims } from '../utils/mockData';
 import toast from 'react-hot-toast';
@@ -23,11 +24,60 @@ const FraudColor = {
   high: 'text-red-400',
 };
 
+type DownloadState = 'idle' | 'loading' | 'done';
+
+function DownloadButton({ claimId }: { claimId: string }) {
+  const [state, setState] = useState<DownloadState>('idle');
+
+  const handleDownload = async () => {
+    if (state !== 'idle') return;
+    setState('loading');
+    // Simulate async PDF generation
+    await new Promise((r) => setTimeout(r, 1800));
+    setState('done');
+    toast.success(`Report for ${claimId} ready to download.`);
+    // Reset after 3s so button is reusable
+    setTimeout(() => setState('idle'), 3000);
+  };
+
+  return (
+    <motion.button
+      onClick={handleDownload}
+      whileHover={state === 'idle' ? { scale: 1.03 } : {}}
+      whileTap={state === 'idle' ? { scale: 0.97 } : {}}
+      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+        state === 'done'
+          ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+          : 'glass text-slate-300 hover:text-white border border-white/10 hover:border-indigo-500/40'
+      }`}
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        {state === 'idle' && (
+          <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="flex items-center gap-2">
+            <Download className="w-4 h-4" /> Download PDF
+          </motion.span>
+        )}
+        {state === 'loading' && (
+          <motion.span key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" /> Generating…
+          </motion.span>
+        )}
+        {state === 'done' && (
+          <motion.span key="done" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+            className="flex items-center gap-2">
+            <Check className="w-4 h-4" /> PDF Ready
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
+  );
+}
+
 export default function ClaimDetailPage() {
   const { id } = useParams<{ id: string }>();
   const claim = mockClaims.find((c) => c.id === id) ?? mockClaims[0];
-
-  const handleDownload = () => toast.success('Report download started (mock).');
 
   const containerVariants = {
     hidden: {},
@@ -56,9 +106,7 @@ export default function ClaimDetailPage() {
             </p>
           </div>
           {claim.report && (
-            <Button variant="ghost" icon={<Download className="w-4 h-4" />} onClick={handleDownload}>
-              Download Report
-            </Button>
+            <DownloadButton claimId={claim.id} />
           )}
         </div>
       </motion.div>
@@ -171,9 +219,17 @@ export default function ClaimDetailPage() {
           {claim.report && (
             <motion.div variants={itemVariants}>
               <Card>
-                <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-indigo-400" /> AI Claim Report
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-indigo-400" /> AI Claim Report
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500">
+                      Generated {new Date(claim.report.generatedAt).toLocaleDateString()}
+                    </span>
+                    <DownloadButton claimId={claim.id} />
+                  </div>
+                </div>
                 <div className="space-y-4 text-sm text-slate-300 leading-relaxed">
                   <div>
                     <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Summary</p>
@@ -189,6 +245,13 @@ export default function ClaimDetailPage() {
                       <p className="text-xs text-slate-500 mb-1">Recommendation</p>
                       <p>{claim.report.repairRecommendation}</p>
                     </div>
+                  </div>
+                  {/* Export actions */}
+                  <div className="flex items-center gap-3 pt-2 border-t border-white/5">
+                    <DownloadButton claimId={claim.id} />
+                    <button className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-indigo-400 transition-colors">
+                      <ExternalLink className="w-3.5 h-3.5" /> View online
+                    </button>
                   </div>
                 </div>
               </Card>
