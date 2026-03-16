@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Toaster } from 'react-hot-toast';
 import { NotificationBell } from './NotificationBell';
+import { OnboardingModal } from './OnboardingModal';
 
 export function AppLayout() {
   return (
@@ -38,6 +39,8 @@ export function AppLayout() {
           },
         }}
       />
+
+      <OnboardingModal />
     </div>
   );
 }
