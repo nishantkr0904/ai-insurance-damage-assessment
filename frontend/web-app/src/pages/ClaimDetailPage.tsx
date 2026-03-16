@@ -7,6 +7,7 @@ import {
 import { Card } from '../components/ui/Card';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { Button } from '../components/ui/Button';
+import { DamageImageViewer } from '../components/DamageImageViewer';
 import { mockClaims } from '../utils/mockData';
 import toast from 'react-hot-toast';
 
@@ -97,15 +98,15 @@ export default function ClaimDetailPage() {
             <motion.div variants={itemVariants}>
               <Card>
                 <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <Car className="w-4 h-4 text-indigo-400" /> Uploaded Images
+                  <Car className="w-4 h-4 text-indigo-400" /> Damage Images
+                  {claim.damageAnalysis && (
+                    <span className="ml-auto text-xs text-slate-500 font-normal">AI detection overlay active</span>
+                  )}
                 </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {claim.images.map((img) => (
-                    <div key={img.id} className="rounded-xl overflow-hidden aspect-video bg-slate-800">
-                      <img src={img.url} alt="Damage" className="w-full h-full object-cover" />
-                    </div>
-                  ))}
-                </div>
+                <DamageImageViewer
+                  images={claim.images}
+                  regions={claim.damageAnalysis?.regions ?? []}
+                />
               </Card>
             </motion.div>
           )}
