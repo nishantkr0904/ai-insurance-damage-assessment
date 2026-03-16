@@ -20,6 +20,11 @@ const ClaimDetailPage      = lazy(() => import('./pages/ClaimDetailPage'));
 const AdminDashboard       = lazy(() => import('./pages/AdminDashboard'));
 const AdminClaimReviewPage = lazy(() => import('./pages/AdminClaimReviewPage'));
 const AnalyticsPage        = lazy(() => import('./pages/AnalyticsPage'));
+const NotificationsPage    = lazy(() => import('./pages/NotificationsPage'));
+const ProfilePage          = lazy(() => import('./pages/ProfilePage'));
+const FraudAlertsPage      = lazy(() => import('./pages/FraudAlertsPage'));
+const AdminSettingsPage    = lazy(() => import('./pages/AdminSettingsPage'));
+const NotFoundPage         = lazy(() => import('./pages/NotFoundPage'));
 
 export const router = createBrowserRouter([
   { path: '/', element: wrap(LandingPage) },
@@ -37,6 +42,8 @@ export const router = createBrowserRouter([
           { path: '/claims', element: wrap(ClaimsListPage) },
           { path: '/claims/new', element: wrap(NewClaimPage) },
           { path: '/claims/:id', element: wrap(ClaimDetailPage) },
+          { path: '/notifications', element: wrap(NotificationsPage) },
+          { path: '/profile', element: wrap(ProfilePage) },
         ],
       },
     ],
@@ -53,11 +60,13 @@ export const router = createBrowserRouter([
           { path: '/admin/claims', element: wrap(ClaimsListPage) },
           { path: '/admin/claims/:id', element: wrap(AdminClaimReviewPage) },
           { path: '/admin/analytics', element: wrap(AnalyticsPage) },
-          { path: '/admin/fraud', element: wrap(AnalyticsPage) },
+          { path: '/admin/fraud', element: wrap(FraudAlertsPage) },
+          { path: '/admin/settings', element: wrap(AdminSettingsPage) },
+          { path: '/notifications', element: wrap(NotificationsPage) },
         ],
       },
     ],
   },
 
-  { path: '*', element: <Navigate to="/" replace /> },
+  { path: '*', element: wrap(NotFoundPage) },
 ]);

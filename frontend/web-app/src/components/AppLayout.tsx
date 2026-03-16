@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Toaster } from 'react-hot-toast';
+import { NotificationBell } from './NotificationBell';
 
 export function AppLayout() {
   return (
@@ -15,6 +16,10 @@ export function AppLayout() {
       <Sidebar />
 
       <main className="ml-64 min-h-screen relative">
+        {/* Top bar */}
+        <div className="sticky top-0 z-20 flex items-center justify-end px-8 py-4 border-b border-white/5 glass">
+          <NotificationBell />
+        </div>
         <div className="p-8">
           <Outlet />
         </div>
