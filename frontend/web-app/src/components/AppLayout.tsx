@@ -15,12 +15,14 @@ export function AppLayout() {
 
       <Sidebar />
 
-      <main className="ml-64 min-h-screen relative">
+      <main className="lg:ml-64 min-h-screen relative">
         {/* Top bar */}
-        <div className="sticky top-0 z-20 flex items-center justify-end px-8 py-4 border-b border-white/5 glass">
+        <div className="sticky top-0 z-20 flex items-center justify-between lg:justify-end gap-4 px-6 lg:px-8 py-4 border-b border-white/5 glass">
+          {/* Spacer for mobile hamburger button */}
+          <div className="w-10 lg:hidden" />
           <NotificationBell />
         </div>
-        <div className="p-8">
+        <div className="p-5 lg:p-8">
           <Outlet />
         </div>
       </main>

@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, CheckCheck, X, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useNotificationStore } from '../../stores/notificationStore';
-import type { AppNotification } from '../../stores/notificationStore';
+import { useNotificationStore } from '../stores/notificationStore';
+import type { AppNotification } from '../stores/notificationStore';
 
 const typeConfig = {
   success: { dot: 'bg-green-400',  bg: 'bg-green-500/10',  border: 'border-green-500/20',  text: 'text-green-400' },
@@ -23,7 +23,7 @@ function timeAgo(iso: string) {
 }
 
 function NotificationItem({ n, onRead }: { n: AppNotification; onRead: () => void }) {
-  const cfg = typeConfig[n.type];
+  const cfg = typeConfig[n.type as keyof typeof typeConfig];
   return (
     <motion.div
       initial={{ opacity: 0, x: 12 }}
