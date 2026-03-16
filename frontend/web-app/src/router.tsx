@@ -22,6 +22,8 @@ const AdminClaimReviewPage = lazy(() => import('./pages/AdminClaimReviewPage'));
 const AnalyticsPage        = lazy(() => import('./pages/AnalyticsPage'));
 const NotificationsPage    = lazy(() => import('./pages/NotificationsPage'));
 const ProfilePage          = lazy(() => import('./pages/ProfilePage'));
+const ForgotPasswordPage   = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage    = lazy(() => import('./pages/ResetPasswordPage'));
 const FraudAlertsPage      = lazy(() => import('./pages/FraudAlertsPage'));
 const AdminSettingsPage    = lazy(() => import('./pages/AdminSettingsPage'));
 const AdminUsersPage       = lazy(() => import('./pages/AdminUsersPage'));
@@ -32,6 +34,8 @@ export const router = createBrowserRouter([
   { path: '/', element: wrap(LandingPage) },
   { path: '/login', element: wrap(LoginPage) },
   { path: '/register', element: wrap(RegisterPage) },
+  { path: '/forgot-password', element: wrap(ForgotPasswordPage) },
+  { path: '/reset-password', element: wrap(ResetPasswordPage) },
 
   // Authenticated user routes
   {
