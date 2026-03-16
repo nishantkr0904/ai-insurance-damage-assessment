@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { FileText, CheckCircle, XCircle, Clock, ShieldAlert, TrendingUp, BarChart3, ArrowRight } from 'lucide-react';
+import { FileText, CheckCircle, XCircle, Clock, ShieldAlert, TrendingUp, BarChart3, ArrowRight, Cpu, Zap, Server, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Card } from '../components/ui/Card';
@@ -111,6 +111,41 @@ export default function AdminDashboard() {
           </Card>
         </motion.div>
       </div>
+
+      {/* System Health */}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <Activity className="w-5 h-5 text-indigo-400" /> System Health
+          </h2>
+          <Link to="/admin/logs" className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors">
+            View logs <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { label: 'API Latency',      value: '42 ms',  status: 'healthy',  icon: Zap,    sub: '↓ 8ms vs. 1h ago' },
+            { label: 'AI Pipeline',      value: '18.4 s', status: 'healthy',  icon: Cpu,    sub: 'Avg. processing time' },
+            { label: 'Uptime',           value: '99.97%', status: 'healthy',  icon: Server, sub: 'Last 30 days' },
+            { label: 'Error Rate',       value: '0.3%',   status: 'warning',  icon: Activity, sub: '↑ 2 errors today' },
+          ].map(({ label, value, status, icon: Icon, sub }) => (
+            <Card key={label} className={`bg-gradient-to-br ${status === 'healthy' ? 'from-green-500/10 to-green-500/3' : 'from-yellow-500/10 to-yellow-500/3'}`}>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-slate-400">{label}</span>
+                <div className={`flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider ${status === 'healthy' ? 'text-green-400' : 'text-yellow-400'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${status === 'healthy' ? 'bg-green-400' : 'bg-yellow-400'}`} />
+                  {status}
+                </div>
+              </div>
+              <div className="flex items-end gap-2">
+                <Icon className={`w-5 h-5 ${status === 'healthy' ? 'text-green-400' : 'text-yellow-400'}`} />
+                <p className={`text-2xl font-black ${status === 'healthy' ? 'text-green-400' : 'text-yellow-400'}`}>{value}</p>
+              </div>
+              <p className="text-xs text-slate-500 mt-1.5">{sub}</p>
+            </Card>
+          ))}
+        </div>
+      </motion.div>
 
       {/* Recent Claims for Review */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
