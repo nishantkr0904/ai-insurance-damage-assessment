@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Upload, FileText, ShieldAlert, BarChart3,
-  Settings, LogOut, Zap, Menu, X, Bell, User,
+  Settings, LogOut, Zap, Menu, X, Bell, User, Users,
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { useNotificationStore } from '../stores/notificationStore';
@@ -21,6 +21,7 @@ const adminNav = [
   { to: '/admin/claims', icon: FileText, label: 'All Claims' },
   { to: '/admin/fraud', icon: ShieldAlert, label: 'Fraud Alerts' },
   { to: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
+  { to: '/admin/users', icon: Users, label: 'Users' },
   { to: '/admin/settings', icon: Settings, label: 'Settings' },
   { to: '/notifications', icon: Bell, label: 'Notifications' },
 ];

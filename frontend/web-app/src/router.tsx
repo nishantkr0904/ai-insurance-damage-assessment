@@ -24,6 +24,7 @@ const NotificationsPage    = lazy(() => import('./pages/NotificationsPage'));
 const ProfilePage          = lazy(() => import('./pages/ProfilePage'));
 const FraudAlertsPage      = lazy(() => import('./pages/FraudAlertsPage'));
 const AdminSettingsPage    = lazy(() => import('./pages/AdminSettingsPage'));
+const AdminUsersPage       = lazy(() => import('./pages/AdminUsersPage'));
 const NotFoundPage         = lazy(() => import('./pages/NotFoundPage'));
 
 export const router = createBrowserRouter([
@@ -61,6 +62,7 @@ export const router = createBrowserRouter([
           { path: '/admin/claims/:id', element: wrap(AdminClaimReviewPage) },
           { path: '/admin/analytics', element: wrap(AnalyticsPage) },
           { path: '/admin/fraud', element: wrap(FraudAlertsPage) },
+          { path: '/admin/users', element: wrap(AdminUsersPage) },
           { path: '/admin/settings', element: wrap(AdminSettingsPage) },
           { path: '/notifications', element: wrap(NotificationsPage) },
         ],
