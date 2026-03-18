@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Filter, ArrowRight, Car, FileText } from 'lucide-react';
 import { Card } from '../components/ui/Card';
@@ -13,6 +13,10 @@ const ALL_STATUSES: ClaimStatus[] = ['uploaded', 'processing', 'analyzed', 'unde
 export default function ClaimsListPage() {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<ClaimStatus | 'all'>('all');
+  const location = useLocation();
+
+  // Check if we're in admin mode based on the current path
+  const isAdminMode = location.pathname.startsWith('/admin');
 
   const filtered = mockClaims.filter((c) => {
     const matchSearch =
@@ -25,8 +29,12 @@ export default function ClaimsListPage() {
   return (
     <div>
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <h1 className="text-3xl font-black mb-1">My Claims</h1>
-        <p className="text-slate-400">Track all your submitted insurance claims.</p>
+        <h1 className="text-3xl font-black mb-1">{isAdminMode ? 'All Claims' : 'My Claims'}</h1>
+        <p className="text-slate-400">
+          {isAdminMode
+            ? 'Review and manage all insurance claims submitted by users.'
+            : 'Track all your submitted insurance claims.'}
+        </p>
       </motion.div>
 
       {/* Filters */}
@@ -64,7 +72,7 @@ export default function ClaimsListPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.07 }}
           >
-            <Link to={`/claims/${claim.id}`}>
+            <Link to={isAdminMode ? `/admin/claims/${claim.id}` : `/claims/${claim.id}`}>
               <Card hover className="flex items-center gap-4">
                 <div className="w-12 h-12 glass rounded-xl flex items-center justify-center flex-shrink-0">
                   <Car className="w-5 h-5 text-indigo-400" />
@@ -94,12 +102,14 @@ export default function ClaimsListPage() {
         {filtered.length === 0 && (
           <EmptyState
             icon={search || filter !== 'all' ? Search : FileText}
-            title={search || filter !== 'all' ? 'No matching claims' : 'No claims yet'}
+            title={search || filter !== 'all' ? 'No matching claims' : isAdminMode ? 'No claims found' : 'No claims yet'}
             description={search || filter !== 'all'
               ? 'Try adjusting your search or filter to find what you\'re looking for.'
-              : 'Submit your first claim to get started with AI-powered damage assessment.'
+              : isAdminMode
+                ? 'There are no claims in the system at the moment.'
+                : 'Submit your first claim to get started with AI-powered damage assessment.'
             }
-            action={search || filter !== 'all' ? undefined : { label: 'Submit First Claim', to: '/claims/new' }}
+            action={search || filter !== 'all' ? undefined : isAdminMode ? undefined : { label: 'Submit First Claim', to: '/claims/new' }}
             secondaryAction={search || filter !== 'all'
               ? { label: 'Clear filters', onClick: () => { setSearch(''); setFilter('all'); } }
               : undefined
