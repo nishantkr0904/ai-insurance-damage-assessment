@@ -63,7 +63,7 @@ function NavContent({ onClose }: { onClose?: () => void }) {
           <NavLink
             key={to}
             to={to}
-            end={to === '/dashboard' || to === '/admin'}
+            end={to === '/dashboard' || to === '/admin' || to === '/claims' || to === '/admin/claims'}
             onClick={onClose}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
