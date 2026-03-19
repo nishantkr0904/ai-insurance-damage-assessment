@@ -25,15 +25,31 @@ export interface AuthResponse {
 }
 
 export const authService = {
-  async register(data: RegisterData): Promise<{ message: string }> {
+  async register(data: RegisterData): Promise<AuthResponse> {
     const existingUser = await userRepository.findByEmail(data.email);
     if (existingUser) {
       throw new ApiError('Email already registered', 400);
     }
 
-    await userRepository.create(data);
+    const user = await userRepository.create(data);
 
-    return { message: 'User registered successfully' };
+    const payload: IUserPayload = {
+      id: user._id.toString(),
+      email: user.email,
+      role: user.role,
+    };
+
+    const token = generateToken(payload);
+
+    return {
+      token,
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    };
   },
 
   async login(data: LoginData): Promise<AuthResponse> {

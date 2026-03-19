@@ -12,7 +12,7 @@ export const authController = {
     try {
       const { name, email, password } = req.body;
       const result = await authService.register({ name, email, password });
-      sendCreated(res, null, result.message);
+      sendCreated(res, result, 'Registration successful');
     } catch (error) {
       next(error);
     }
