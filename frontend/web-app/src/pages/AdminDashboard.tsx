@@ -1,21 +1,14 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, CheckCircle, XCircle, Clock, ShieldAlert, TrendingUp, BarChart3, ArrowRight, Cpu, Zap, Server, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Card } from '../components/ui/Card';
 import { StatusBadge } from '../components/ui/StatusBadge';
-import { mockClaims, mockAnalytics } from '../utils/mockData';
-
-const a = mockAnalytics;
-
-const statsConfig = [
-  { label: 'Total Claims', value: a.totalClaims, icon: FileText, color: 'text-indigo-400', gradient: 'from-indigo-500/20 to-indigo-500/5' },
-  { label: 'Approved', value: a.approvedClaims, icon: CheckCircle, color: 'text-green-400', gradient: 'from-green-500/20 to-green-500/5' },
-  { label: 'Rejected', value: a.rejectedClaims, icon: XCircle, color: 'text-red-400', gradient: 'from-red-500/20 to-red-500/5' },
-  { label: 'Pending Review', value: a.pendingClaims, icon: Clock, color: 'text-yellow-400', gradient: 'from-yellow-500/20 to-yellow-500/5' },
-  { label: 'Fraud Detected', value: a.fraudDetected, icon: ShieldAlert, color: 'text-orange-400', gradient: 'from-orange-500/20 to-orange-500/5' },
-  { label: 'Avg. Process Time', value: `${a.avgProcessingTime}s`, icon: TrendingUp, color: 'text-cyan-400', gradient: 'from-cyan-500/20 to-cyan-500/5' },
-];
+import { Loader } from '../components/ui/Loader';
+import { getAllClaims, getAnalytics } from '../services/adminService';
+import type { Claim, AnalyticsData } from '../types';
+import toast from 'react-hot-toast';
 
 const PIE_COLORS = ['#6366f1', '#a855f7', '#ec4899', '#f59e0b', '#06b6d4'];
 
@@ -33,6 +26,54 @@ const containerVariants = { hidden: {}, visible: { transition: { staggerChildren
 const itemVariants = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45 } } };
 
 export default function AdminDashboard() {
+  const [claims, setClaims] = useState<Claim[]>([]);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [claimsData, analyticsData] = await Promise.all([
+          getAllClaims(),
+          getAnalytics()
+        ]);
+        setClaims(claimsData);
+        setAnalytics(analyticsData);
+      } catch (error) {
+        console.error('Failed to load admin dashboard data:', error);
+        toast.error('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader size="lg" text="Loading dashboard..." />
+      </div>
+    );
+  }
+
+  if (!analytics) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-slate-400">Failed to load analytics data</p>
+      </div>
+    );
+  }
+
+  const statsConfig = [
+    { label: 'Total Claims', value: analytics.totalClaims, icon: FileText, color: 'text-indigo-400', gradient: 'from-indigo-500/20 to-indigo-500/5' },
+    { label: 'Approved', value: analytics.approvedClaims, icon: CheckCircle, color: 'text-green-400', gradient: 'from-green-500/20 to-green-500/5' },
+    { label: 'Rejected', value: analytics.rejectedClaims, icon: XCircle, color: 'text-red-400', gradient: 'from-red-500/20 to-red-500/5' },
+    { label: 'Pending Review', value: analytics.pendingClaims, icon: Clock, color: 'text-yellow-400', gradient: 'from-yellow-500/20 to-yellow-500/5' },
+    { label: 'Fraud Detected', value: analytics.fraudDetected, icon: ShieldAlert, color: 'text-orange-400', gradient: 'from-orange-500/20 to-orange-500/5' },
+    { label: 'Avg. Process Time', value: `${analytics.avgProcessingTime}s`, icon: TrendingUp, color: 'text-cyan-400', gradient: 'from-cyan-500/20 to-cyan-500/5' },
+  ];
   return (
     <div>
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
@@ -65,7 +106,7 @@ export default function AdminDashboard() {
               <h3 className="font-semibold">Claims Over Time</h3>
             </div>
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={a.claimsOverTime} barSize={32}>
+              <BarChart data={analytics.claimsOverTime} barSize={32}>
                 <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                 <YAxis hide />
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
@@ -91,15 +132,15 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-6">
               <ResponsiveContainer width={160} height={160}>
                 <PieChart>
-                  <Pie data={a.damageTypeDistribution} dataKey="count" cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3}>
-                    {a.damageTypeDistribution.map((_, i) => (
+                  <Pie data={analytics.damageTypeDistribution} dataKey="count" cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3}>
+                    {analytics.damageTypeDistribution.map((_, i) => (
                       <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                     ))}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
               <div className="space-y-2 flex-1">
-                {a.damageTypeDistribution.map(({ type, count }, i) => (
+                {analytics.damageTypeDistribution.map(({ type, count }, i) => (
                   <div key={type} className="flex items-center gap-2 text-sm">
                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
                     <span className="text-slate-400 flex-1 truncate">{type}</span>
@@ -170,7 +211,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {mockClaims.map((claim) => (
+                {(claims || []).slice(0, 5).map((claim) => (
                   <tr key={claim.id} className="hover:bg-white/3 transition-colors">
                     <td className="py-3 font-medium">{claim.id}</td>
                     <td className="py-3 text-slate-400">

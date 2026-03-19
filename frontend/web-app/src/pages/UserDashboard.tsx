@@ -1,11 +1,15 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FileText, Upload, CheckCircle, Clock, TrendingUp, Plus, ArrowRight, Car } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { Button } from '../components/ui/Button';
+import { Loader } from '../components/ui/Loader';
 import { useAuthStore } from '../stores/authStore';
-import { mockClaims } from '../utils/mockData';
+import { fetchClaims } from '../services/claimService';
+import type { Claim } from '../types';
+import toast from 'react-hot-toast';
 
 const containerVariants = {
   hidden: {},
@@ -18,13 +22,40 @@ const itemVariants = {
 
 export default function UserDashboard() {
   const user = useAuthStore((s) => s.user);
-  const claims = mockClaims;
+  const [claims, setClaims] = useState<Claim[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const loadClaims = async () => {
+      try {
+        const userClaims = await fetchClaims();
+        setClaims(userClaims);
+      } catch (error) {
+        console.error('Failed to fetch claims:', error);
+        toast.error('Failed to load claims');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadClaims();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader size="lg" text="Loading your claims..." />
+      </div>
+    );
+  }
+
+  // Safe stats calculation with fallbacks
+  const safeClaims = claims || [];
   const stats = [
-    { label: 'Total Claims', value: claims.length, icon: FileText, color: 'text-indigo-400', bg: 'from-indigo-500/20 to-indigo-500/5' },
-    { label: 'Approved', value: claims.filter((c) => c.status === 'approved').length, icon: CheckCircle, color: 'text-green-400', bg: 'from-green-500/20 to-green-500/5' },
-    { label: 'Processing', value: claims.filter((c) => ['processing', 'analyzed', 'under_review'].includes(c.status)).length, icon: Clock, color: 'text-yellow-400', bg: 'from-yellow-500/20 to-yellow-500/5' },
-    { label: 'Total Estimated', value: `$${claims.reduce((sum, c) => sum + (c.costEstimation?.totalEstimate ?? 0), 0).toLocaleString()}`, icon: TrendingUp, color: 'text-purple-400', bg: 'from-purple-500/20 to-purple-500/5' },
+    { label: 'Total Claims', value: safeClaims.length, icon: FileText, color: 'text-indigo-400', bg: 'from-indigo-500/20 to-indigo-500/5' },
+    { label: 'Approved', value: safeClaims.filter((c) => c.status === 'approved').length, icon: CheckCircle, color: 'text-green-400', bg: 'from-green-500/20 to-green-500/5' },
+    { label: 'Processing', value: safeClaims.filter((c) => ['processing', 'analyzed', 'under_review'].includes(c.status)).length, icon: Clock, color: 'text-yellow-400', bg: 'from-yellow-500/20 to-yellow-500/5' },
+    { label: 'Total Estimated', value: `$${safeClaims.reduce((sum, c) => sum + (c.costEstimation?.totalEstimate ?? 0), 0).toLocaleString()}`, icon: TrendingUp, color: 'text-purple-400', bg: 'from-purple-500/20 to-purple-500/5' },
   ];
 
   return (
@@ -80,7 +111,7 @@ export default function UserDashboard() {
         </div>
 
         <div className="space-y-3">
-          {claims.map((claim, i) => (
+          {safeClaims.map((claim, i) => (
             <motion.div
               key={claim.id}
               initial={{ opacity: 0, x: -16 }}
@@ -118,7 +149,7 @@ export default function UserDashboard() {
           ))}
         </div>
 
-        {claims.length === 0 && (
+        {safeClaims.length === 0 && (
           <Card className="text-center py-16">
             <Upload className="w-12 h-12 text-slate-600 mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No claims yet</h3>
