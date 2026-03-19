@@ -33,14 +33,15 @@ export default function LoginPage() {
       setAuth(user, token);
       toast.success(`Welcome back, ${user.name}!`);
       navigate(user.role === 'admin' ? '/admin' : '/dashboard');
-    } catch {
-      toast.error('Invalid email or password');
+    } catch (error: any) {
+      const message = error.response?.data?.error || error.response?.data?.message || 'Invalid email or password';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Demo quick-login
+  // Demo quick-login (only works if backend has these accounts)
   const quickLogin = async (role: 'user' | 'admin') => {
     const creds = role === 'admin'
       ? { email: 'admin@autoclaim.ai', password: 'admin123' }
@@ -50,12 +51,11 @@ export default function LoginPage() {
     try {
       const { user, token } = await login(creds);
       setAuth(user, token);
+      toast.success(`Welcome back, ${user.name}!`);
       navigate(user.role === 'admin' ? '/admin' : '/dashboard');
-    } catch {
-      // Demo mode: mock auth
-      const mockUser = { id: '1', name: role === 'admin' ? 'Admin User' : 'John Driver', email: creds.email, role, createdAt: new Date().toISOString() };
-      setAuth(mockUser, 'mock-token');
-      navigate(role === 'admin' ? '/admin' : '/dashboard');
+    } catch (error: any) {
+      const message = error.response?.data?.error || error.response?.data?.message || 'Demo account not available. Please ensure backend is running.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }

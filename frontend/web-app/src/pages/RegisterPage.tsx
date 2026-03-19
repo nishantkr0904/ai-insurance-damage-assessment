@@ -29,6 +29,7 @@ export default function RegisterPage() {
     ev.preventDefault();
     if (!validate()) return;
     setLoading(true);
+
     try {
       const { user, token } = await register({
         name: form.name,
@@ -38,12 +39,9 @@ export default function RegisterPage() {
       setAuth(user, token);
       toast.success('Account created successfully!');
       navigate('/dashboard');
-    } catch {
-      // Demo mode
-      const mockUser = { id: Date.now().toString(), name: form.name, email: form.email, role: 'user' as const, createdAt: new Date().toISOString() };
-      setAuth(mockUser, 'mock-token');
-      toast.success('Account created! Welcome aboard.');
-      navigate('/dashboard');
+    } catch (error: any) {
+      const message = error.response?.data?.error || error.response?.data?.message || 'Registration failed. Please try again.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
