@@ -107,7 +107,7 @@ export const aiService = {
       // If high fraud risk, create alert notification
       if (fraudResult.riskLevel === 'high') {
         await notificationRepository.create({
-          userId: claim.userId.toString(),
+          userId: (claim.userId as any)._id?.toString() || claim.userId.toString(),
           title: 'Fraud Alert',
           message: `Your claim ${claimId} has been flagged for review.`,
           type: 'fraud_alert',
@@ -152,7 +152,7 @@ export const aiService = {
 
       // Notify user that report is ready
       await notificationRepository.create({
-        userId: claim.userId.toString(),
+        userId: (claim.userId as any)._id?.toString() || claim.userId.toString(),
         title: 'Report Ready',
         message: `Your claim report for ${claimId} is ready for review.`,
         type: 'report_ready',

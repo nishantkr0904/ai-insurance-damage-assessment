@@ -52,7 +52,7 @@ export const claimService = {
     }
 
     // If not admin, verify ownership
-    if (!isAdmin && userId && claim.userId.toString() !== userId) {
+    if (!isAdmin && userId && (claim.userId as any)._id?.toString() !== userId && claim.userId.toString() !== userId) {
       throw new ApiError('Not authorized to access this claim', 403);
     }
 

@@ -6,12 +6,12 @@ services:
     build: ./backend
     ports:
       - "5001:5001"  # Using 5001 to avoid conflict with macOS AirPlay
+    env_file:
+      - ./backend/.env
     environment:
       - NODE_ENV=development
       - PORT=5001
       - MONGODB_URI=mongodb://mongodb:27017/insurance-claims
-      - JWT_SECRET=dev-secret-key-change-in-production
-      - JWT_EXPIRES_IN=7d
       - AI_DAMAGE_SERVICE_URL=http://host.docker.internal:8000
       - AI_COST_SERVICE_URL=http://host.docker.internal:8001
       - AI_FRAUD_SERVICE_URL=http://host.docker.internal:8002
