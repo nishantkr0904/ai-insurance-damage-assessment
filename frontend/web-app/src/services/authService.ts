@@ -19,14 +19,22 @@ export interface AuthResponse {
 
 export async function login(payload: LoginPayload): Promise<AuthResponse> {
   const { data } = await apiClient.post('/auth/login', payload);
-  return data;
+  // Backend returns { success, data: { token, user } }
+  return data.data;
 }
 
 export async function register(payload: RegisterPayload): Promise<AuthResponse> {
   const { data } = await apiClient.post('/auth/register', payload);
-  return data;
+  // Backend returns { success, data: { token, user } }
+  return data.data;
 }
 
 export async function logout(): Promise<void> {
   await apiClient.post('/auth/logout');
+}
+
+export async function getCurrentUser(): Promise<User> {
+  const { data } = await apiClient.get('/auth/profile');
+  // Backend returns { success, data: { user } }
+  return data.data.user;
 }
