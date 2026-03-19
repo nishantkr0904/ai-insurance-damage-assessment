@@ -59,7 +59,7 @@ function NotificationItem({ n, onRead }: { n: AppNotification; onRead: () => voi
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const { notifications, unreadCount, markRead, markAllRead } = useNotificationStore();
+  const { notifications, unreadCount, markRead, markAllRead, fetchNotifications } = useNotificationStore();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -68,6 +68,11 @@ export function NotificationBell() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  useEffect(() => {
+    // Fetch notifications on component mount
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   return (
     <div className="relative" ref={ref}>

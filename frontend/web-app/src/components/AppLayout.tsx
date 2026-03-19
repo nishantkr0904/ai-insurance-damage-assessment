@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
-import { Toaster } from 'react-hot-toast';
 import { NotificationBell } from './NotificationBell';
 import { OnboardingModal } from './OnboardingModal';
 
@@ -27,18 +26,6 @@ export function AppLayout() {
           <Outlet />
         </div>
       </main>
-
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: {
-            background: 'rgba(15,23,42,0.95)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            color: '#e2e8f0',
-            backdropFilter: 'blur(12px)',
-          },
-        }}
-      />
 
       <OnboardingModal />
     </div>
