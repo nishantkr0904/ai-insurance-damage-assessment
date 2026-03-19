@@ -1,16 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Filter, ArrowRight, Car, FileText } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { EmptyState } from '../components/ui/EmptyState';
-import { mockClaims } from '../utils/mockData';
-import type { ClaimStatus } from '../types';
+import { Loader } from '../components/ui/Loader';
+import { fetchClaims } from '../services/claimService';
+import { getAllClaims } from '../services/adminService';
+import type { Claim, ClaimStatus } from '../types';
+import toast from 'react-hot-toast';
 
 const ALL_STATUSES: ClaimStatus[] = ['uploaded', 'processing', 'analyzed', 'under_review', 'approved', 'rejected'];
 
 export default function ClaimsListPage() {
+  const [claims, setClaims] = useState<Claim[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<ClaimStatus | 'all'>('all');
   const location = useLocation();
@@ -18,7 +23,35 @@ export default function ClaimsListPage() {
   // Check if we're in admin mode based on the current path
   const isAdminMode = location.pathname.startsWith('/admin');
 
-  const filtered = mockClaims.filter((c) => {
+  useEffect(() => {
+    const loadClaims = async () => {
+      try {
+        const claimsData = isAdminMode
+          ? await getAllClaims()  // Admin sees all claims
+          : await fetchClaims();  // Users see only their claims
+        setClaims(claimsData);
+      } catch (error) {
+        console.error('Failed to fetch claims:', error);
+        toast.error('Failed to load claims');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadClaims();
+  }, [isAdminMode]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader size="lg" text="Loading claims..." />
+      </div>
+    );
+  }
+
+  // Safe filtering with fallback for undefined claims
+  const safeClaims = claims || [];
+  const filtered = safeClaims.filter((c) => {
     const matchSearch =
       c.id.toLowerCase().includes(search.toLowerCase()) ||
       `${c.vehicleInfo.make} ${c.vehicleInfo.model}`.toLowerCase().includes(search.toLowerCase());

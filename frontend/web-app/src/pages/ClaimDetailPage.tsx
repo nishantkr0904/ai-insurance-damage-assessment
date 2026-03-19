@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Car, Brain, TrendingUp, Shield, FileText,
@@ -8,8 +8,11 @@ import {
 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { StatusBadge } from '../components/ui/StatusBadge';
+import { Loader } from '../components/ui/Loader';
 import { DamageImageViewer } from '../components/DamageImageViewer';
-import { mockClaims } from '../utils/mockData';
+import { fetchClaimById } from '../services/claimService';
+import { getClaimById } from '../services/adminService';
+import type { Claim } from '../types';
 import toast from 'react-hot-toast';
 
 const SeverityColor = {
@@ -77,7 +80,47 @@ function DownloadButton({ claimId }: { claimId: string }) {
 
 export default function ClaimDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const claim = mockClaims.find((c) => c.id === id) ?? mockClaims[0];
+  const location = useLocation();
+  const [claim, setClaim] = useState<Claim | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const isAdminMode = location.pathname.startsWith('/admin');
+
+  useEffect(() => {
+    const loadClaim = async () => {
+      if (!id) return;
+
+      try {
+        const claimData = isAdminMode
+          ? await getClaimById(id)      // Admin endpoint
+          : await fetchClaimById(id);   // User endpoint
+        setClaim(claimData);
+      } catch (error) {
+        console.error('Failed to fetch claim:', error);
+        toast.error('Failed to load claim details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadClaim();
+  }, [id, isAdminMode]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader size="lg" text="Loading claim details..." />
+      </div>
+    );
+  }
+
+  if (!claim) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-slate-400">Claim not found</p>
+      </div>
+    );
+  }
 
   const containerVariants = {
     hidden: {},
