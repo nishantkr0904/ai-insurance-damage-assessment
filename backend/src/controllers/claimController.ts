@@ -41,10 +41,7 @@ export const claimController = {
         images: imageUrls,
       });
 
-      sendCreated(res, {
-        claimId: claim._id,
-        status: claim.status,
-      });
+      sendCreated(res, { claim });
     } catch (error) {
       next(error);
     }
@@ -59,7 +56,7 @@ export const claimController = {
       const userId = req.user!.id;
       const claims = await claimService.getUserClaims(userId);
 
-      sendSuccess(res, claims);
+      sendSuccess(res, { claims });
     } catch (error) {
       next(error);
     }
@@ -75,7 +72,7 @@ export const claimController = {
       const userId = req.user!.id;
 
       const claim = await claimService.getClaimById(claimId, userId);
-      sendSuccess(res, claim);
+      sendSuccess(res, { claim });
     } catch (error) {
       next(error);
     }
@@ -100,9 +97,9 @@ export const claimController = {
       }
 
       const imageUrls = await uploadService.uploadMultipleImages(files, claimId);
-      await claimService.addImagesTolaim(claimId, imageUrls, userId);
+      const updatedClaim = await claimService.addImagesToClaim(claimId, imageUrls, userId);
 
-      sendSuccess(res, null, 'Images uploaded successfully');
+      sendSuccess(res, { claim: updatedClaim }, 'Images uploaded successfully');
     } catch (error) {
       next(error);
     }
@@ -117,11 +114,7 @@ export const claimController = {
       const { claimId } = req.params;
 
       const claim = await aiService.analyzeDamage(claimId);
-      sendSuccess(res, {
-        damageDetected: claim.damageAnalysis?.damageDetected,
-        damageType: claim.damageAnalysis?.damageType,
-        severityScore: claim.damageAnalysis?.severityScore,
-      });
+      sendSuccess(res, { claim });
     } catch (error) {
       next(error);
     }
@@ -136,9 +129,7 @@ export const claimController = {
       const { claimId } = req.params;
 
       const claim = await aiService.estimateCost(claimId);
-      sendSuccess(res, {
-        estimatedRepairCost: claim.costEstimation?.totalEstimate,
-      });
+      sendSuccess(res, { claim });
     } catch (error) {
       next(error);
     }
@@ -153,10 +144,7 @@ export const claimController = {
       const { claimId } = req.params;
 
       const claim = await aiService.checkFraud(claimId);
-      sendSuccess(res, {
-        fraudScore: claim.fraudCheck?.fraudScore,
-        riskLevel: claim.fraudCheck?.riskLevel,
-      });
+      sendSuccess(res, { claim });
     } catch (error) {
       next(error);
     }
@@ -171,10 +159,7 @@ export const claimController = {
       const { claimId } = req.params;
 
       const claim = await aiService.generateReport(claimId);
-      sendSuccess(res, {
-        reportId: claim.reportId,
-        reportUrl: claim.reportUrl,
-      });
+      sendSuccess(res, { claim });
     } catch (error) {
       next(error);
     }

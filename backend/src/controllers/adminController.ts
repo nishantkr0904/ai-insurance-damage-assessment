@@ -51,7 +51,7 @@ export const adminController = {
       const { notes } = req.body;
 
       const claim = await claimService.approveClaim(claimId, adminId, notes);
-      sendSuccess(res, { claimId: claim._id, status: claim.status }, 'Claim approved');
+      sendSuccess(res, { claim }, 'Claim approved');
     } catch (error) {
       next(error);
     }
@@ -68,7 +68,7 @@ export const adminController = {
       const { notes } = req.body;
 
       const claim = await claimService.rejectClaim(claimId, adminId, notes);
-      sendSuccess(res, { claimId: claim._id, status: claim.status }, 'Claim rejected');
+      sendSuccess(res, { claim }, 'Claim rejected');
     } catch (error) {
       next(error);
     }
