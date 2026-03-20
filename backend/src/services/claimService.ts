@@ -93,7 +93,7 @@ export const claimService = {
     return claim;
   },
 
-  async addImagesTolaim(
+  async addImagesToClaim(
     claimId: string,
     imageUrls: string[],
     userId: string
