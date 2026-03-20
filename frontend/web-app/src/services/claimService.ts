@@ -43,9 +43,12 @@ export async function fetchClaimById(id: string): Promise<Claim> {
 export async function createClaim(payload: CreateClaimPayload): Promise<Claim> {
   const formData = new FormData();
 
-  // Add vehicle info and description
-  formData.append('vehicleInfo', JSON.stringify(payload.vehicleInfo));
-  formData.append('incidentDescription', payload.incidentDescription);
+  // Add vehicle info fields (backend expects these individual fields)
+  formData.append('vehicle_number', payload.vehicleInfo.licensePlate);
+  formData.append('vehicle_make', payload.vehicleInfo.make);
+  formData.append('vehicle_model', payload.vehicleInfo.model);
+  formData.append('vehicle_year', payload.vehicleInfo.year?.toString() || '');
+  formData.append('incident_description', payload.incidentDescription);
 
   // Add images
   payload.images.forEach((image) => {
