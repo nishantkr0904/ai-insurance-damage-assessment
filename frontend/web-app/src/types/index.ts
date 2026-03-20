@@ -10,7 +10,7 @@ export interface Claim {
   id: string;
   userId: string;
   status: ClaimStatus;
-  images: ClaimImage[];
+  images: (ClaimImage | string)[];
   vehicleInfo: VehicleInfo;
   damageAnalysis?: DamageAnalysis;
   costEstimation?: CostEstimation;
@@ -31,8 +31,8 @@ export type ClaimStatus =
 export interface ClaimImage {
   id: string;
   url: string;
-  thumbnailUrl: string;
-  uploadedAt: string;
+  thumbnailUrl?: string;
+  uploadedAt?: string;
 }
 
 export interface VehicleInfo {
