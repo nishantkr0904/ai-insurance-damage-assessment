@@ -1,7 +1,7 @@
 import type { ClaimStatus } from '../../types';
 
 const statusConfig: Record<ClaimStatus, { label: string; color: string; dot: string }> = {
-  uploaded:     { label: 'Uploaded',       color: 'bg-blue-500/20 text-blue-400 border border-blue-500/30',    dot: 'bg-blue-400' },
+  submitted:    { label: 'Submitted',      color: 'bg-blue-500/20 text-blue-400 border border-blue-500/30',    dot: 'bg-blue-400' },
   processing:   { label: 'Processing',     color: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30', dot: 'bg-yellow-400' },
   analyzed:     { label: 'Analyzed',       color: 'bg-purple-500/20 text-purple-400 border border-purple-500/30', dot: 'bg-purple-400' },
   under_review: { label: 'Under Review',   color: 'bg-orange-500/20 text-orange-400 border border-orange-500/30', dot: 'bg-orange-400' },

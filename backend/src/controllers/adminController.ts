@@ -19,7 +19,7 @@ export const adminController = {
         skip: skip ? parseInt(skip as string, 10) : undefined,
       });
 
-      sendSuccess(res, claims);
+      sendSuccess(res, { claims });
     } catch (error) {
       next(error);
     }
@@ -34,7 +34,7 @@ export const adminController = {
       const { claimId } = req.params;
 
       const claim = await claimService.getClaimById(claimId, undefined, true);
-      sendSuccess(res, claim);
+      sendSuccess(res, { claim });
     } catch (error) {
       next(error);
     }

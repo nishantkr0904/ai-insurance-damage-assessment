@@ -54,8 +54,23 @@ export default function LoginPage() {
       toast.success(`Welcome back, ${user.name}!`);
       navigate(user.role === 'admin' ? '/admin' : '/dashboard');
     } catch (error: any) {
-      const message = error.response?.data?.error || error.response?.data?.message || 'Demo account not available. Please ensure backend is running.';
+      // More detailed error handling
+      let message = 'Login failed';
+      
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        message = 'Cannot connect to server. Please ensure backend is running on port 5001.';
+      } else if (error.response) {
+        // Server responded with error
+        message = error.response.data?.error || error.response.data?.message || 'Demo account not available';
+      } else if (error.request) {
+        // Request made but no response
+        message = 'No response from server. Check if backend is running.';
+      } else {
+        message = error.message || 'An unexpected error occurred';
+      }
+      
       toast.error(message);
+      console.error('Demo login error:', error);
     } finally {
       setLoading(false);
     }

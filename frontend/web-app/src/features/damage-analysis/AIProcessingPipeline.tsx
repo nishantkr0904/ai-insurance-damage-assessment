@@ -10,7 +10,7 @@ interface Step {
 }
 
 const PIPELINE_STEPS: Step[] = [
-  { key: 'uploaded',    label: 'Images Uploaded',   icon: CheckCircle,  desc: 'Damage images stored securely in cloud.' },
+  { key: 'submitted',   label: 'Images Uploaded',   icon: CheckCircle,  desc: 'Damage images stored securely in cloud.' },
   { key: 'processing',  label: 'Preprocessing',      icon: Clock,        desc: 'Noise reduction, resizing & ROI extraction.' },
   { key: 'analyzed',    label: 'Damage Detection',   icon: Brain,        desc: 'YOLOv8 detecting damage regions & severity.' },
   { key: 'cost',        label: 'Cost Estimation',    icon: TrendingUp,   desc: 'ML model predicting repair costs.' },
@@ -22,7 +22,7 @@ const stepOrder = PIPELINE_STEPS.map((s) => s.key);
 
 function resolvedStepIndex(status: ClaimStatus): number {
   const map: Record<ClaimStatus, number> = {
-    uploaded: 0,
+    submitted: 0,
     processing: 1,
     analyzed: 3,
     under_review: 5,

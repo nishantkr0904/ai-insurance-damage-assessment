@@ -21,7 +21,7 @@ export interface Claim {
 }
 
 export type ClaimStatus =
-  | 'uploaded'
+  | 'submitted'
   | 'processing'
   | 'analyzed'
   | 'under_review'
@@ -36,9 +36,9 @@ export interface ClaimImage {
 }
 
 export interface VehicleInfo {
-  make: string;
-  model: string;
-  year: number;
+  make?: string;
+  model?: string;
+  year?: number;
   licensePlate: string;
 }
 

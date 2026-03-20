@@ -194,7 +194,21 @@ cp .env.example .env
 npm run dev
 ```
 
-### 3. Frontend Setup
+### 3. Create Demo Users
+
+```bash
+cd backend
+npm run seed:demo
+```
+
+This creates two demo accounts:
+
+- **Demo User**: `user@autoclaim.ai` / `user123`
+- **Demo Admin**: `admin@autoclaim.ai` / `admin123`
+
+See [Demo Users Documentation](docs/DEMO_USERS.md) for more details.
+
+### 4. Frontend Setup
 
 ```bash
 cd frontend/web-app
@@ -202,13 +216,15 @@ npm install
 npm run dev
 ```
 
-### 4. Access the Application
+### 5. Access the Application
 
 | Service      | URL                                 |
 | ------------ | ----------------------------------- |
 | Frontend     | http://localhost:5173               |
 | Backend API  | http://localhost:5001/api/v1        |
 | Health Check | http://localhost:5001/api/v1/health |
+
+**Quick Login:** Use the "Demo User" or "Demo Admin" buttons on the login page for instant access!
 
 ---
 

@@ -144,7 +144,12 @@ export interface IClaimAnalytics {
   approvedClaims: number;
   rejectedClaims: number;
   pendingClaims: number;
-  averageProcessingTime: number;
+  fraudDetected: number;
+  avgProcessingTime: number;
+  averageProcessingTime: number; // Backward compatibility
   totalEstimatedCost: number;
   fraudAlertsCount: number;
+  claimsOverTime: { date: string; count: number }[];
+  damageTypeDistribution: { type: string; count: number }[];
+  fraudRiskDistribution: { level: string; count: number }[];
 }

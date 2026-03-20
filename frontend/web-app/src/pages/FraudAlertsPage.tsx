@@ -24,10 +24,14 @@ export default function FraudAlertsPage() {
   const [search, setSearch] = useState('');
 
   const filtered = fraudClaims.filter((c) => {
+    if (!c || !c.vehicleInfo) return false;
+    
     const matchRisk = filter === 'all' || c.fraudDetection?.riskLevel === filter;
+    const vehicleText = `${c.vehicleInfo.make || ''} ${c.vehicleInfo.model || ''}`.trim();
+    const claimId = c.id || '';
     const matchSearch =
-      c.id.toLowerCase().includes(search.toLowerCase()) ||
-      `${c.vehicleInfo.make} ${c.vehicleInfo.model}`.toLowerCase().includes(search.toLowerCase());
+      claimId.toLowerCase().includes(search.toLowerCase()) ||
+      vehicleText.toLowerCase().includes(search.toLowerCase());
     return matchRisk && matchSearch;
   });
 
@@ -136,7 +140,7 @@ export default function FraudAlertsPage() {
                           </span>
                         </div>
                         <p className="text-sm text-slate-400 truncate mb-1.5">
-                          {claim.vehicleInfo.year} {claim.vehicleInfo.make} {claim.vehicleInfo.model} · {claim.vehicleInfo.licensePlate}
+                          {[claim.vehicleInfo.year, claim.vehicleInfo.make, claim.vehicleInfo.model].filter(Boolean).join(' ')} · {claim.vehicleInfo.licensePlate}
                         </p>
                         {fd.flags.length > 0 && (
                           <div className="flex flex-wrap gap-1.5">

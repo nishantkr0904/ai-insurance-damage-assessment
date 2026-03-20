@@ -145,7 +145,7 @@ export default function ClaimDetailPage() {
               <StatusBadge status={claim.status} pulse={claim.status === 'processing'} />
             </div>
             <p className="text-slate-400">
-              {claim.vehicleInfo.year} {claim.vehicleInfo.make} {claim.vehicleInfo.model} · {claim.vehicleInfo.licensePlate}
+              {[claim.vehicleInfo.year, claim.vehicleInfo.make, claim.vehicleInfo.model].filter(Boolean).join(' ')} · {claim.vehicleInfo.licensePlate}
             </p>
           </div>
           {claim.report && (

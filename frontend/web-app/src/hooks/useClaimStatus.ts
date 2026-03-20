@@ -10,7 +10,7 @@ export function useClaimStatus(claimId: string) {
     refetchInterval: (query) => {
       const status = query.state.data?.status;
       // Poll every 5s while actively processing
-      return status === 'processing' || status === 'uploaded' ? 5000 : false;
+      return status === 'processing' || status === 'submitted' ? 5000 : false;
     },
     // Fall back to mock data when backend is unavailable
     placeholderData: mockClaims.find((c) => c.id === claimId),

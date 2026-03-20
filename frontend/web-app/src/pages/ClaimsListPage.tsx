@@ -11,7 +11,7 @@ import { getAllClaims } from '../services/adminService';
 import type { Claim, ClaimStatus } from '../types';
 import toast from 'react-hot-toast';
 
-const ALL_STATUSES: ClaimStatus[] = ['uploaded', 'processing', 'analyzed', 'under_review', 'approved', 'rejected'];
+const ALL_STATUSES: ClaimStatus[] = ['submitted', 'processing', 'analyzed', 'under_review', 'approved', 'rejected'];
 
 export default function ClaimsListPage() {
   const [claims, setClaims] = useState<Claim[]>([]);
@@ -52,9 +52,13 @@ export default function ClaimsListPage() {
   // Safe filtering with fallback for undefined claims
   const safeClaims = claims || [];
   const filtered = safeClaims.filter((c) => {
+    if (!c || !c.vehicleInfo) return false;
+    
+    const vehicleText = `${c.vehicleInfo.make || ''} ${c.vehicleInfo.model || ''}`.trim();
+    const claimId = c.id || '';
     const matchSearch =
-      c.id.toLowerCase().includes(search.toLowerCase()) ||
-      `${c.vehicleInfo.make} ${c.vehicleInfo.model}`.toLowerCase().includes(search.toLowerCase());
+      claimId.toLowerCase().includes(search.toLowerCase()) ||
+      vehicleText.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === 'all' || c.status === filter;
     return matchSearch && matchFilter;
   });
@@ -116,7 +120,7 @@ export default function ClaimsListPage() {
                     <StatusBadge status={claim.status} pulse={claim.status === 'processing'} />
                   </div>
                   <p className="text-sm text-slate-400 truncate">
-                    {claim.vehicleInfo.year} {claim.vehicleInfo.make} {claim.vehicleInfo.model} · {claim.vehicleInfo.licensePlate}
+                    {[claim.vehicleInfo.year, claim.vehicleInfo.make, claim.vehicleInfo.model].filter(Boolean).join(' ')} · {claim.vehicleInfo.licensePlate}
                   </p>
                 </div>
                 <div className="text-right flex-shrink-0">

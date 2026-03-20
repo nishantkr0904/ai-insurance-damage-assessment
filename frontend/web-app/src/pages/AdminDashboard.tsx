@@ -215,7 +215,7 @@ export default function AdminDashboard() {
                   <tr key={claim.id} className="hover:bg-white/3 transition-colors">
                     <td className="py-3 font-medium">{claim.id}</td>
                     <td className="py-3 text-slate-400">
-                      {claim.vehicleInfo.year} {claim.vehicleInfo.make} {claim.vehicleInfo.model}
+                      {[claim.vehicleInfo.year, claim.vehicleInfo.make, claim.vehicleInfo.model].filter(Boolean).join(' ')}
                     </td>
                     <td className="py-3">
                       <StatusBadge status={claim.status} />
