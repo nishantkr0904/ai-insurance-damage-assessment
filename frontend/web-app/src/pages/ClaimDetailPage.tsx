@@ -195,7 +195,11 @@ export default function ClaimDetailPage() {
                   )}
                 </h3>
                 <DamageImageViewer
-                  images={claim.images}
+                  images={claim.images.map((img, idx) =>
+                    typeof img === 'string'
+                      ? { id: `img-${idx}`, url: img, thumbnailUrl: img }
+                      : img
+                  )}
                   regions={claim.damageAnalysis?.regions ?? []}
                 />
               </Card>

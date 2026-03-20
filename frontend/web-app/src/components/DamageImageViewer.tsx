@@ -4,7 +4,7 @@ import { Eye, EyeOff, ZoomIn, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { ClaimImage, DamageRegion } from '../types';
 
 interface Props {
-  images: ClaimImage[];
+  images: (ClaimImage | string)[];
   regions: DamageRegion[];
   /** Natural pixel size of the source images (default: 400×300) */
   naturalSize?: { width: number; height: number };
@@ -22,6 +22,9 @@ export function DamageImageViewer({ images, regions, naturalSize = { width: 400,
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const active = images[activeIdx];
+  const getImageUrl = (img: ClaimImage | string): string => {
+    return typeof img === 'string' ? img : img.url;
+  };
 
   const toPercent = (box: DamageRegion['boundingBox']) => ({
     left:   `${(box.x / naturalSize.width) * 100}%`,
@@ -75,7 +78,7 @@ export function DamageImageViewer({ images, regions, naturalSize = { width: 400,
       {/* Main viewer */}
       <div className="relative rounded-xl overflow-hidden bg-slate-900 aspect-video select-none">
         <img
-          src={active.url}
+          src={getImageUrl(active)}
           alt={`Damage image ${activeIdx + 1}`}
           className="w-full h-full object-cover"
           draggable={false}
@@ -160,17 +163,20 @@ export function DamageImageViewer({ images, regions, naturalSize = { width: 400,
       {/* Thumbnails */}
       {images.length > 1 && (
         <div className="flex gap-2">
-          {images.map((img, i) => (
-            <button
-              key={img.id}
-              onClick={() => setActiveIdx(i)}
-              className={`relative w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 transition-all ${
-                i === activeIdx ? 'ring-2 ring-indigo-500' : 'opacity-50 hover:opacity-80'
-              }`}
-            >
-              <img src={img.thumbnailUrl || img.url} alt="" className="w-full h-full object-cover" />
-            </button>
-          ))}
+          {images.map((img, i) => {
+            const thumbUrl = typeof img === 'string' ? img : (img.thumbnailUrl || img.url);
+            return (
+              <button
+                key={typeof img === 'string' ? `img-${i}` : img.id}
+                onClick={() => setActiveIdx(i)}
+                className={`relative w-16 h-12 rounded-lg overflow-hidden flex-shrink-0 transition-all ${
+                  i === activeIdx ? 'ring-2 ring-indigo-500' : 'opacity-50 hover:opacity-80'
+                }`}
+              >
+                <img src={thumbUrl} alt="" className="w-full h-full object-cover" />
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -221,7 +227,7 @@ export function DamageImageViewer({ images, regions, naturalSize = { width: 400,
                 <X className="w-4 h-4" />
               </button>
               <div className="relative rounded-2xl overflow-hidden bg-slate-900">
-                <img src={active.url} alt="Full view" className="w-full object-contain max-h-[80vh]" />
+                <img src={getImageUrl(active)} alt="Full view" className="w-full object-contain max-h-[80vh]" />
                 {showBoxes && regions.map((region, i) => {
                   const style = SEVERITY_STYLE[region.severity];
                   const pos = toPercent(region.boundingBox);
