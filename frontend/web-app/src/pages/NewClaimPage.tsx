@@ -10,6 +10,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { InputField } from '../components/ui/InputField';
 import toast from 'react-hot-toast';
+import { createClaim } from '../services/claimService';
 
 const STEPS = ['Vehicle Info', 'Upload Images', 'Review & Submit'];
 
@@ -79,9 +80,26 @@ export default function NewClaimPage() {
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1800)); // Simulate API
-    toast.success('Claim submitted! AI analysis in progress.');
-    navigate('/claims/CLM-003');
+    try {
+      const claim = await createClaim({
+        vehicleInfo: {
+          licensePlate: vehicle.licensePlate,
+          make: vehicle.make,
+          model: vehicle.model,
+          year: parseInt(vehicle.year, 10),
+        },
+        incidentDescription: 'Vehicle damage assessment claim',
+        images: files.map((f) => f.file),
+      });
+
+      toast.success('Claim submitted! AI analysis in progress.');
+      navigate(`/claims/${claim.id}`);
+    } catch (error) {
+      console.error('Failed to submit claim:', error);
+      toast.error('Failed to submit claim. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const vf = (key: keyof VehicleForm) => ({
