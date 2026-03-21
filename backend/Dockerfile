@@ -17,7 +17,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app /app
 
 EXPOSE 5000
 
