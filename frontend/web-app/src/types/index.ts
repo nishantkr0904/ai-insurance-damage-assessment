@@ -10,7 +10,7 @@ export interface Claim {
   id: string;
   userId: string;
   status: ClaimStatus;
-  images: (ClaimImage | string)[];
+  images: ClaimImage[];
   vehicleInfo: VehicleInfo;
   damageAnalysis?: DamageAnalysis;
   costEstimation?: CostEstimation;
