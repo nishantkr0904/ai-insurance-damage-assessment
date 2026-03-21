@@ -5,8 +5,6 @@ services:
     build: ./frontend/web-app
     ports:
       - "3000:3000"
-    env_file:
-      - .env
 
   backend:
     build: ./backend
