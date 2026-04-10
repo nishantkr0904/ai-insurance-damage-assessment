@@ -7,8 +7,8 @@ ENV PYTHONUNBUFFERED=1
 ENV PIP_DEFAULT_TIMEOUT=120
 
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends libgl1 libglib2.0-0 \
-	&& rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir --retries 10 --default-timeout 120 -r requirements.txt
