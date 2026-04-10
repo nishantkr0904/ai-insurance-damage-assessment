@@ -21,14 +21,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DamageAnalysisRequest'
+              $ref: "#/components/schemas/DamageAnalysisRequest"
       responses:
-        '200':
+        "200":
           description: Damage analysis response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DamageAnalysisResponse'
+                $ref: "#/components/schemas/DamageAnalysisResponse"
   /estimate-cost:
     post:
       summary: Estimate repair cost from damage data
@@ -37,14 +37,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CostEstimationRequest'
+              $ref: "#/components/schemas/CostEstimationRequest"
       responses:
-        '200':
+        "200":
           description: Cost estimation response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CostEstimationResponse'
+                $ref: "#/components/schemas/CostEstimationResponse"
   /fraud-check:
     post:
       summary: Run fraud checks for a claim
@@ -53,14 +53,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FraudCheckRequest'
+              $ref: "#/components/schemas/FraudCheckRequest"
       responses:
-        '200':
+        "200":
           description: Fraud check response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FraudCheckResponse'
+                $ref: "#/components/schemas/FraudCheckResponse"
   /generate-report:
     post:
       summary: Generate claim report from prior AI outputs
@@ -69,14 +69,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReportGenerationRequest'
+              $ref: "#/components/schemas/ReportGenerationRequest"
       responses:
-        '200':
+        "200":
           description: Report generation response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReportGenerationResponse'
+                $ref: "#/components/schemas/ReportGenerationResponse"
 components:
   schemas:
     BoundingBox:
@@ -144,7 +144,7 @@ components:
         boundingBoxes:
           type: array
           items:
-            $ref: '#/components/schemas/BoundingBox'
+            $ref: "#/components/schemas/BoundingBox"
         confidence:
           type: number
           minimum: 0
@@ -249,7 +249,7 @@ components:
           minimum: 0
           maximum: 1
         vehicle_info:
-          $ref: '#/components/schemas/VehicleInfo'
+          $ref: "#/components/schemas/VehicleInfo"
         incident_description:
           type: string
 
