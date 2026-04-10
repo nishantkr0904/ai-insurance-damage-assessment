@@ -1,0 +1,13 @@
+{
+  "claim_id": "CLM-1001",
+  "damage_type": "dent",
+  "severity_score": 0.62,
+  "estimated_cost": 18200,
+  "fraud_score": 0.18,
+  "vehicle_info": {
+    "vehicleNumber": "MH12AB1234",
+    "make": "Toyota",
+    "model": "Camry"
+  },
+  "incident_description": "Rear side impact at low speed in parking lot."
+}

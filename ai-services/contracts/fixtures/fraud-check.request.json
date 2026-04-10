@@ -1,0 +1,7 @@
+{
+  "image_urls": [
+    "https://example-bucket.s3.ap-south-1.amazonaws.com/claims/CLM-1001/front.jpg",
+    "https://example-bucket.s3.ap-south-1.amazonaws.com/claims/CLM-1001/side.jpg"
+  ],
+  "claim_id": "CLM-1001"
+}

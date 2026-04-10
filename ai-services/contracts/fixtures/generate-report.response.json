@@ -1,0 +1,5 @@
+{
+  "reportId": "RPT-CLM-1001-1712123456789",
+  "reportUrl": "https://example-bucket.s3.ap-south-1.amazonaws.com/reports/RPT-CLM-1001-1712123456789.pdf",
+  "reportText": "Claim CLM-1001 analyzed. Damage type dent, severity 0.62, estimated cost 18200, fraud risk low."
+}

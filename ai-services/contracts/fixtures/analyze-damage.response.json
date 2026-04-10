@@ -1,0 +1,16 @@
+{
+  "damageDetected": true,
+  "damageType": "dent",
+  "severityScore": 0.62,
+  "boundingBoxes": [
+    {
+      "x": 128,
+      "y": 96,
+      "width": 180,
+      "height": 140,
+      "label": "dent",
+      "confidence": 0.91
+    }
+  ],
+  "confidence": 0.89
+}

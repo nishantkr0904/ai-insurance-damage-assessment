@@ -1,0 +1,268 @@
+openapi: 3.0.3
+info:
+  title: AI Microservices Contract
+  version: 1.0.0
+  description: Contract-first API spec for damage, cost, fraud, and report services.
+servers:
+  - url: http://localhost:8000
+    description: Damage service
+  - url: http://localhost:8001
+    description: Cost service
+  - url: http://localhost:8002
+    description: Fraud service
+  - url: http://localhost:8003
+    description: Report service
+paths:
+  /analyze-damage:
+    post:
+      summary: Analyze vehicle image damage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DamageAnalysisRequest'
+      responses:
+        '200':
+          description: Damage analysis response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DamageAnalysisResponse'
+  /estimate-cost:
+    post:
+      summary: Estimate repair cost from damage data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CostEstimationRequest'
+      responses:
+        '200':
+          description: Cost estimation response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CostEstimationResponse'
+  /fraud-check:
+    post:
+      summary: Run fraud checks for a claim
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FraudCheckRequest'
+      responses:
+        '200':
+          description: Fraud check response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FraudCheckResponse'
+  /generate-report:
+    post:
+      summary: Generate claim report from prior AI outputs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportGenerationRequest'
+      responses:
+        '200':
+          description: Report generation response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportGenerationResponse'
+components:
+  schemas:
+    BoundingBox:
+      type: object
+      required:
+        - x
+        - y
+        - width
+        - height
+        - label
+        - confidence
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        label:
+          type: string
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+    VehicleInfo:
+      type: object
+      required:
+        - vehicleNumber
+      properties:
+        vehicleNumber:
+          type: string
+        make:
+          type: string
+        model:
+          type: string
+
+    DamageAnalysisRequest:
+      type: object
+      required:
+        - image_url
+      properties:
+        image_url:
+          type: string
+          format: uri
+
+    DamageAnalysisResponse:
+      type: object
+      required:
+        - damageDetected
+        - damageType
+        - severityScore
+        - boundingBoxes
+        - confidence
+      properties:
+        damageDetected:
+          type: boolean
+        damageType:
+          type: string
+        severityScore:
+          type: number
+          minimum: 0
+          maximum: 1
+        boundingBoxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/BoundingBox'
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+
+    CostEstimationRequest:
+      type: object
+      required:
+        - damage_type
+        - severity_score
+      properties:
+        damage_type:
+          type: string
+        severity_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        vehicle_make:
+          type: string
+        vehicle_model:
+          type: string
+
+    CostEstimationResponse:
+      type: object
+      required:
+        - estimatedRepairCost
+        - laborCost
+        - partsCost
+        - paintCost
+      properties:
+        estimatedRepairCost:
+          type: number
+          minimum: 0
+        laborCost:
+          type: number
+          minimum: 0
+        partsCost:
+          type: number
+          minimum: 0
+        paintCost:
+          type: number
+          minimum: 0
+
+    FraudCheckRequest:
+      type: object
+      required:
+        - image_urls
+        - claim_id
+      properties:
+        image_urls:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uri
+        claim_id:
+          type: string
+
+    FraudCheckResponse:
+      type: object
+      required:
+        - fraudScore
+        - riskLevel
+        - flags
+      properties:
+        fraudScore:
+          type: number
+          minimum: 0
+          maximum: 1
+        riskLevel:
+          type: string
+          enum: [low, medium, high]
+        flags:
+          type: array
+          items:
+            type: string
+
+    ReportGenerationRequest:
+      type: object
+      required:
+        - claim_id
+        - damage_type
+        - severity_score
+        - estimated_cost
+        - fraud_score
+        - vehicle_info
+        - incident_description
+      properties:
+        claim_id:
+          type: string
+        damage_type:
+          type: string
+        severity_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        estimated_cost:
+          type: number
+          minimum: 0
+        fraud_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        vehicle_info:
+          $ref: '#/components/schemas/VehicleInfo'
+        incident_description:
+          type: string
+
+    ReportGenerationResponse:
+      type: object
+      required:
+        - reportId
+        - reportUrl
+        - reportText
+      properties:
+        reportId:
+          type: string
+        reportUrl:
+          type: string
+        reportText:
+          type: string
