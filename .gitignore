@@ -107,7 +107,7 @@ dist
 # Docusaurus cache and generated files
 .docusaurus
 
-# Project docs folder
+# Project docs markdown files
 docs/
 
 # Serverless directories
