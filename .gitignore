@@ -60,6 +60,7 @@ __pycache__/
 ai-services/datasets/
 runs/
 merged_dataset.zip
+/requirements.txt
 ai-services/damage-detection/models/
 ai-services/damage-detection/models/**/best.pt
 *.cache
