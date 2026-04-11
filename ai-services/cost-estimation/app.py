@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import logging
+logger = logging.getLogger("cost-estimation")
+
 import os
 from typing import Dict
 
@@ -48,7 +51,10 @@ class CostEstimationResponse(BaseModel):
 
 def normalize_damage_type(raw: str) -> str:
     normalized = raw.strip().lower().replace(" ", "_")
-    return normalized if normalized in BASE_COST_BY_DAMAGE else "dent"
+    if normalized not in BASE_COST_BY_DAMAGE:
+        logger.warning(f"Unknown damage type: {normalized}, defaulting to dent")
+        return "dent"
+    return normalized
 
 
 def get_make_factor(vehicle_make: str | None) -> float:
@@ -69,7 +75,7 @@ def health() -> dict:
     return {
         "status": "healthy",
         "service": "cost-estimation",
-        "engine": "deterministic-regression-v1",
+        "engine": "rule-based-cost-estimation-v1",
         "regionalInflationFactor": REGIONAL_INFLATION_FACTOR,
     }
 
@@ -85,6 +91,7 @@ def ready() -> dict:
 
 @app.post("/estimate-cost", response_model=CostEstimationResponse)
 def estimate_cost(payload: CostEstimationRequest) -> CostEstimationResponse:
+    logger.info(f"Estimating cost for damage={payload.damage_type}, severity={payload.severity_score}")
     damage_type = normalize_damage_type(payload.damage_type)
     base_cost = BASE_COST_BY_DAMAGE[damage_type]
 
