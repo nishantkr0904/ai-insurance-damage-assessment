@@ -1,11 +1,20 @@
 from __future__ import annotations
 
+import os
+import sys
+from pathlib import Path
+
 import cv2
 import numpy as np
 from fastapi.testclient import TestClient
 
-import app as damage_app
+SERVICE_DIR = Path(__file__).resolve().parents[1]
+if str(SERVICE_DIR) not in sys.path:
+    sys.path.insert(0, str(SERVICE_DIR))
 
+os.environ.setdefault("MODEL_PATH", str(SERVICE_DIR / "models" / "v2" / "best.pt"))
+
+import app as damage_app
 
 client = TestClient(damage_app.app)
 
