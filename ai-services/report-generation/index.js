@@ -25,11 +25,14 @@ app.post('/generate-report', (req, res) => {
   } = req.body;
 
   console.log(`[Report Generation] Generating report for claim: ${claim_id}`);
+  console.log(`[Report Generation] Inputs → damage=${damage_type}, severity=${severity_score}, cost=${estimated_cost}, fraud=${fraud_score}`);
 
   // Simulate processing delay
   setTimeout(() => {
     const reportId = `RPT-${claim_id}-${Date.now()}`;
+    console.log(`[Report Generation] Generated reportId: ${reportId}`);
 
+    console.log(`[Report Generation] Report generated successfully for claim: ${claim_id}`);
     res.json({
       reportId,
       reportUrl: `https://mock-reports.example.com/reports/${reportId}.pdf`,
