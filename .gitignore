@@ -53,6 +53,17 @@ __pycache__/
 .pytest_cache/
 .venv/
 
+# macOS metadata
+.DS_Store
+
+# Training data and generated ML artifacts
+ai-services/datasets/
+runs/
+merged_dataset.zip
+ai-services/damage-detection/models/
+ai-services/damage-detection/models/**/best.pt
+*.cache
+
 # Optional npm cache directory
 .npm
 
