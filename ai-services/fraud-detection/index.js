@@ -20,17 +20,38 @@ app.post('/fraud-check', (req, res) => {
 
   // Simulate processing delay
   setTimeout(() => {
-    const fraudScore = parseFloat((Math.random() * 0.3).toFixed(2)); // Low fraud score 0-0.3
-    let riskLevel = 'low';
+    let fraudScore = 0;
     const flags = [];
 
-    if (fraudScore > 0.2) {
-      riskLevel = 'medium';
-      flags.push('Multiple similar claims detected');
+    // Rule 1: Too many images
+    if (image_urls?.length > 5) {
+      fraudScore += 0.2;
+      flags.push('Too many images submitted');
     }
-    if (fraudScore > 0.25) {
-      flags.push('Image metadata inconsistency');
+
+    // Rule 2: Duplicate images (simple check)
+    const uniqueImages = new Set(image_urls);
+    if (uniqueImages.size !== image_urls.length) {
+      fraudScore += 0.3;
+      flags.push('Duplicate images detected');
     }
+
+    // Rule 3: Suspicious claim id pattern
+    if (claim_id && claim_id.toLowerCase().includes('test')) {
+      fraudScore += 0.2;
+      flags.push('Suspicious claim pattern');
+    }
+
+    // Normalize
+    fraudScore = Math.min(fraudScore, 1.0);
+    fraudScore = parseFloat(fraudScore.toFixed(2));
+    
+    let riskLevel = 'low';
+
+    if (fraudScore > 0.6) riskLevel = 'high';
+    else if (fraudScore > 0.3) riskLevel = 'medium';
+
+    console.log(`[Fraud Detection] Score: ${fraudScore}, Risk: ${riskLevel}`);
 
     res.json({
       fraudScore,
