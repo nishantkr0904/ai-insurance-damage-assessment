@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import logging
 import os
 from typing import List
+
+from ultralytics import YOLO
 
 import cv2
 import numpy as np
@@ -15,6 +20,12 @@ from urllib3.util.retry import Retry
 
 app = FastAPI(title="Damage Detection Service", version="1.0.0")
 logger = logging.getLogger("damage-detection")
+
+MODEL_PATH = os.getenv("MODEL_PATH")
+if not MODEL_PATH:
+    raise RuntimeError("MODEL_PATH not set")
+
+model = YOLO(MODEL_PATH)
 
 REQUEST_TIMEOUT_SECONDS = float(os.getenv("REQUEST_TIMEOUT_SECONDS", "15"))
 MAX_IMAGE_BYTES = int(os.getenv("MAX_IMAGE_BYTES", str(12 * 1024 * 1024)))
@@ -60,7 +71,7 @@ def clamp(value: float, low: float, high: float) -> float:
 def load_runtime_status() -> dict:
     return {
         "service": "damage-detection",
-        "engine": "opencv-contour-v1",
+        "engine": "yolov8-damage-detection-v2",
         "requestTimeoutSeconds": REQUEST_TIMEOUT_SECONDS,
         "maxImageBytes": MAX_IMAGE_BYTES,
     }
@@ -108,46 +119,27 @@ def infer_damage_type(aspect_ratio: float, edge_density: float) -> str:
 
 
 def detect_damage_regions(image: np.ndarray) -> List[BoundingBox]:
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-
-    edges = cv2.Canny(blurred, threshold1=55, threshold2=150)
-    kernel = np.ones((3, 3), np.uint8)
-    edges = cv2.dilate(edges, kernel, iterations=1)
-
-    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    img_area = float(image.shape[0] * image.shape[1])
+    results = model(image)
 
     boxes: List[BoundingBox] = []
-    for contour in contours:
-        area = cv2.contourArea(contour)
-        if area < 1200:
+    for r in results:
+        if r.boxes is None:
             continue
+        for box in r.boxes:
+            x1, y1, x2, y2 = box.xyxy[0].tolist()
+            w = x2 - x1
+            h = y2 - y1
 
-        x, y, w, h = cv2.boundingRect(contour)
-        roi = gray[y : y + h, x : x + w]
-        if roi.size == 0:
-            continue
-
-        roi_edges = cv2.Canny(roi, 40, 120)
-        edge_density = float(np.count_nonzero(roi_edges)) / float(roi_edges.size)
-        aspect_ratio = float(w) / float(h if h else 1)
-
-        label = infer_damage_type(aspect_ratio, edge_density)
-
-        area_ratio = area / img_area
-        confidence = clamp(0.55 + area_ratio * 5.0 + edge_density * 0.5, 0.55, 0.98)
-
-        boxes.append(
-            BoundingBox(
-                x=float(x),
-                y=float(y),
-                width=float(w),
-                height=float(h),
-                label=label,
-                confidence=round(confidence, 2),
+            boxes.append(
+                BoundingBox(
+                    x=float(x1),
+                    y=float(y1),
+                    width=float(w),
+                    height=float(h),
+                    label="damage",
+                    confidence=round(float(box.conf[0]), 2),
+                )
             )
-        )
 
     boxes.sort(key=lambda b: b.width * b.height, reverse=True)
     return boxes[:5]
@@ -173,7 +165,20 @@ def health() -> dict:
 
 @app.get("/ready")
 def ready() -> dict:
-    return {"status": "ready", **load_runtime_status()}
+    try:
+        if model is None:
+            raise RuntimeError("Model not loaded")
+
+        return {
+            "status": "ready",
+            "modelLoaded": True,
+            **load_runtime_status(),
+        }
+    except Exception as e:
+        return {
+            "status": "not_ready",
+            "error": str(e),
+        }
 
 
 @app.post("/analyze-damage", response_model=DamageAnalysisResponse)
