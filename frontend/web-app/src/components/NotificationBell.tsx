@@ -23,7 +23,7 @@ function timeAgo(iso: string) {
 }
 
 function NotificationItem({ n, onRead }: { n: AppNotification; onRead: () => void }) {
-  const cfg = typeConfig[n.type as keyof typeof typeConfig];
+  const cfg = typeConfig[n.type as keyof typeof typeConfig] ?? typeConfig.info;
   return (
     <motion.div
       initial={{ opacity: 0, x: 12 }}
@@ -34,11 +34,11 @@ function NotificationItem({ n, onRead }: { n: AppNotification; onRead: () => voi
       onClick={onRead}
     >
       <div className="flex items-start gap-3">
-        <span className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${cfg.dot} ${!n.read ? 'animate-pulse' : ''}`} />
+        <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${cfg.dot} ${!n.read ? 'animate-pulse' : ''}`} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-medium text-slate-200 truncate">{n.title}</p>
-            <span className="text-[10px] text-slate-500 flex-shrink-0">{timeAgo(n.createdAt)}</span>
+            <span className="text-[10px] text-slate-500 shrink-0">{timeAgo(n.createdAt)}</span>
           </div>
           <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{n.message}</p>
           {n.claimId && (

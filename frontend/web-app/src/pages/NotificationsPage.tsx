@@ -22,7 +22,7 @@ function timeAgo(iso: string) {
 }
 
 function NotificationRow({ n, onRead }: { n: AppNotification; onRead: () => void }) {
-  const cfg = typeConfig[n.type];
+  const cfg = typeConfig[n.type] ?? typeConfig.info;
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
