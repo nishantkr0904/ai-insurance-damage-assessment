@@ -68,6 +68,14 @@ router.post(
   claimController.generateReport
 );
 
+// POST /api/v1/claims/:claimId/run-pipeline - Run full AI pipeline (damage -> cost -> fraud -> report)
+router.post(
+  '/:claimId/run-pipeline',
+  claimIdValidation,
+  validate,
+  claimController.runPipeline
+);
+
 // GET /api/v1/claims/:claimId/report - Get claim report
 router.get(
   '/:claimId/report',

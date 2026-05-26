@@ -98,6 +98,12 @@ export async function generateReport(claimId: string): Promise<Claim> {
   return data.data.claim;
 }
 
+// Run full pipeline: analyze -> cost -> fraud -> report
+export async function runFullPipeline(claimId: string): Promise<Claim> {
+  const { data } = await apiClient.post<ClaimResponse>(`/claims/${claimId}/run-pipeline`);
+  return data.data.claim;
+}
+
 // Get claim report
 export async function getReport(claimId: string): Promise<any> {
   const { data } = await apiClient.get(`/claims/${claimId}/report`);

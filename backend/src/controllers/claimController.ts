@@ -182,4 +182,19 @@ export const claimController = {
       next(error);
     }
   },
+
+  async runPipeline(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { claimId } = req.params;
+
+      const claim = await aiService.runFullPipeline(claimId);
+      sendSuccess(res, { claim }, 'Full AI pipeline completed');
+    } catch (error) {
+      next(error);
+    }
+  },
 };
