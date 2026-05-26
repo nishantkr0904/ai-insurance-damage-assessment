@@ -23,7 +23,12 @@ logger = logging.getLogger("damage-detection")
 
 MODEL_PATH = os.getenv("MODEL_PATH")
 if not MODEL_PATH:
-    raise RuntimeError("MODEL_PATH not set")
+    # try a sensible repo-local default: ./models/best.pt next to the service
+    candidate = os.path.join(os.path.dirname(__file__), "models", "best.pt")
+    if os.path.exists(candidate):
+        MODEL_PATH = candidate
+    else:
+        raise RuntimeError("MODEL_PATH not set and no local model found at ./models/best.pt")
 
 model = YOLO(MODEL_PATH)
 

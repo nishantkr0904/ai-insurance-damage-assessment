@@ -13,6 +13,12 @@ RUN apt-get update \
 COPY requirements.txt ./
 RUN pip install --no-cache-dir --retries 10 --default-timeout 120 -r requirements.txt
 
+# Copy optional local models directory (if you mount or include models in repo)
+COPY models ./models
+
+# Set a sensible default MODEL_PATH which can be overridden at runtime via env
+ENV MODEL_PATH=./models/best.pt
+
 COPY app.py ./
 
 EXPOSE 8000
