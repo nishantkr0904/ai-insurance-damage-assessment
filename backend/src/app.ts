@@ -13,6 +13,16 @@ const app: Application = express();
 // Security middleware
 app.use(helmet());
 
+// Lightweight responses for deployment health checks and the main URL.
+// Keep these ahead of rate limiting so platform probes never get throttled.
+app.get(['/','/healthz'], (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Insurance Claims API Running',
+    environment: config.nodeEnv,
+  });
+});
+
 // CORS configuration
 app.use(
   cors({
