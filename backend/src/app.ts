@@ -16,21 +16,27 @@ const allowedProductionOrigins = new Set([
   ...config.cors.allowedOrigins,
 ]);
 
+function normalizeOrigin(origin: string): string {
+  return origin.trim().replace(/\/+$/, '');
+}
+
 function isAllowedOrigin(origin?: string): boolean {
   if (!origin) {
     return true;
   }
 
+  const normalizedOrigin = normalizeOrigin(origin);
+
   if (config.nodeEnv !== 'production') {
     return true;
   }
 
-  if (allowedProductionOrigins.has(origin)) {
+  if (allowedProductionOrigins.has(normalizedOrigin)) {
     return true;
   }
 
   // Allow Vercel preview deployments for this project.
-  return /^https:\/\/ai-insurance-damage-assessment-[a-z0-9-]+\.vercel\.app$/.test(origin);
+  return /^https:\/\/ai-insurance-damage-assessment-[a-z0-9-]+\.vercel\.app$/.test(normalizedOrigin);
 }
 
 // Security middleware
