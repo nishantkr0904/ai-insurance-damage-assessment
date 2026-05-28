@@ -2,6 +2,11 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const corsAllowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || process.env.FRONTEND_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 export const config = {
   port: parseInt(process.env.PORT || '5000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -36,6 +41,10 @@ export const config = {
 
   logging: {
     level: process.env.LOG_LEVEL || 'info',
+  },
+
+  cors: {
+    allowedOrigins: corsAllowedOrigins,
   },
 
   upload: {

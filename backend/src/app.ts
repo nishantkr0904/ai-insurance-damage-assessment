@@ -10,6 +10,29 @@ import { logger } from './utils/logger.js';
 
 const app: Application = express();
 
+const defaultProductionOrigins = ['https://ai-insurance-damage-assessment.vercel.app'];
+const allowedProductionOrigins = new Set([
+  ...defaultProductionOrigins,
+  ...config.cors.allowedOrigins,
+]);
+
+function isAllowedOrigin(origin?: string): boolean {
+  if (!origin) {
+    return true;
+  }
+
+  if (config.nodeEnv !== 'production') {
+    return true;
+  }
+
+  if (allowedProductionOrigins.has(origin)) {
+    return true;
+  }
+
+  // Allow Vercel preview deployments for this project.
+  return /^https:\/\/ai-insurance-damage-assessment-[a-z0-9-]+\.vercel\.app$/.test(origin);
+}
+
 // Security middleware
 app.use(helmet());
 
@@ -26,9 +49,15 @@ app.get(['/','/healthz'], (_req, res) => {
 // CORS configuration
 app.use(
   cors({
-    origin: config.nodeEnv === 'production'
-      ? ['https://your-frontend-domain.com']
-      : '*',
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      logger.warn(`Blocked CORS request from origin: ${origin}`);
+      callback(null, false);
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })

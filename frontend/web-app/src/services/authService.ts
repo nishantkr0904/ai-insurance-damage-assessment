@@ -30,11 +30,15 @@ export async function register(payload: RegisterPayload): Promise<AuthResponse> 
 }
 
 export async function logout(): Promise<void> {
-  await apiClient.post('/auth/logout');
+  try {
+    await apiClient.post('/auth/logout');
+  } catch {
+    // Backend uses stateless JWT; local token cleanup still logs the user out.
+  }
 }
 
 export async function getCurrentUser(): Promise<User> {
   const { data } = await apiClient.get('/auth/profile');
-  // Backend returns { success, data: { user } }
-  return data.data.user;
+  // Backend returns { success, data: user }
+  return data.data;
 }

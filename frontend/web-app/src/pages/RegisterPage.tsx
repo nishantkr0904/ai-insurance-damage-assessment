@@ -40,7 +40,16 @@ export default function RegisterPage() {
       toast.success('Account created successfully!');
       navigate('/dashboard');
     } catch (error: any) {
-      const message = error.response?.data?.error || error.response?.data?.message || 'Registration failed. Please try again.';
+      let message = 'Registration failed. Please try again.';
+
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        message = 'Unable to reach server. Please check backend URL and CORS settings.';
+      } else if (error.response?.data?.error || error.response?.data?.message) {
+        message = error.response.data.error || error.response.data.message;
+      } else if (error.request) {
+        message = 'No response from server. Please try again shortly.';
+      }
+
       toast.error(message);
     } finally {
       setLoading(false);

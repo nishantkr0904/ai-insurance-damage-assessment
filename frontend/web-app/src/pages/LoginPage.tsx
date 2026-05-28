@@ -34,7 +34,14 @@ export default function LoginPage() {
       toast.success(`Welcome back, ${user.name}!`);
       navigate(user.role === 'admin' ? '/admin' : '/dashboard');
     } catch (error: any) {
-      const message = error.response?.data?.error || error.response?.data?.message || 'Invalid email or password';
+      let message = 'Invalid email or password';
+
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        message = 'Unable to reach server. Please check backend URL and CORS settings.';
+      } else if (error.response?.data?.error || error.response?.data?.message) {
+        message = error.response.data.error || error.response.data.message;
+      }
+
       toast.error(message);
     } finally {
       setLoading(false);
