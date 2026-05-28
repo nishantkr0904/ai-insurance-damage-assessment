@@ -58,7 +58,7 @@ export default function LoginPage() {
       let message = 'Login failed';
       
       if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
-        message = 'Cannot connect to server. Please ensure backend is running on port 5001.';
+        message = 'Cannot connect to server. Please check the backend URL and try again.';
       } else if (error.response) {
         // Server responded with error
         message = error.response.data?.error || error.response.data?.message || 'Demo account not available';
